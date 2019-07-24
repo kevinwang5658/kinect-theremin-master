@@ -121,6 +121,45 @@ namespace kinect_theremin
             else
                 StopPlayer();
         }
+        
+        private class DottedLine {
+            private int id;
+            private PointF coordinatesFrom;
+            private PointF coordinatesTo;
+
+            public DottedLine(int id, PointF coordinatesFrom, PointF coordinatesTo, Pen pen) {
+                this.id = id;
+                this.coordinatesFrom = coordinatesFrom;
+                this.coordinatesTo = coordinatesTo;
+                this.draw(pen);
+            }
+
+            public void draw(Pen pen) {
+                Graphics.drawLine(blackPen, coordinatesFrom, coordinatesTo);
+            }
+        }
+       private void drawDottedLines() {
+        Pen blackPen = new Pen(Color.Black, 3);
+        int skeletonImageWidth = skeletonImage.Width;
+        PointF coordinatesFrom = new PointF(0, 0);
+        PointF coordinatesTo = new PointF(0, 0);
+
+        // Fixed y coordinate for where line starts
+        double constantOriginY;
+        coordinatesFrom.Y = constantOriginY;
+        // Fixed y cooridnate for where line ends
+        double constantEndY;
+        coordinatesTo.Y = constantEndY;
+
+        for (int i = 12; i < 0; i--) {
+            double lineIncrement = skeletonImageWidth/i;
+            double constantMargin;
+            coordinatesTo.X = constantMargin + lineIncrement;
+            coordinatesFrom.X = constantMargin + lineIncrement;
+
+            Graphics.drawLine(blackPen, coordinatesFrom, coordinatesTo);
+        };
+       }
 
         // Event handler for the keyBox's SelectionChanged event
         // Used to change the key of the wave
