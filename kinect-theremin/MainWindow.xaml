@@ -3,28 +3,26 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="600" Width="900">
     <Grid>
-        <Rectangle Canvas.Left="-8" Canvas.Top="-7" Fill="Black" Margin="215,0,0,0" Name="rectangle1" Stroke="Black" />
-        <Label Content="Kinect Theremin" FontSize="24" FontWeight="Bold" Height="52" HorizontalAlignment="Left" Margin="10,12,0,0" Name="label1" VerticalAlignment="Top" Width="197" />
-        <Label Content="by Ben Centra" FontSize="12" FontWeight="Normal" Height="30" HorizontalAlignment="Left" Margin="59,49,0,0" Name="label4" VerticalAlignment="Top" />
-        <Button Content="Play" FontSize="14" Height="33" HorizontalAlignment="Left" Margin="43,91,0,0" Name="playButton" VerticalAlignment="Top" Width="125" Click="playButton_Click" />
-        <Label Content="Options:" FontSize="14" FontWeight="Bold" Height="30" HorizontalAlignment="Left" Margin="8,130,0,0" Name="label5" VerticalAlignment="Top" />
-        <Label Content="Key: " FontSize="14" FontWeight="Normal" Height="30" HorizontalAlignment="Left" Margin="8,166,0,0" Name="label6" VerticalAlignment="Top" />
-        <ComboBox Height="23" HorizontalAlignment="Left" Margin="47,171,0,0" Name="keyBox" VerticalAlignment="Top" Width="70" SelectionChanged="keyBox_Changed" />
-        <Image Height="150" HorizontalAlignment="Left" Margin="8,399,0,0" Name="rgbImage" Opacity="1" Stretch="Fill" VerticalAlignment="Top" Width="200" />
-        <Rectangle Height="480" HorizontalAlignment="Left" Margin="227,11,0,0" Name="rectangle2" Stroke="Black" VerticalAlignment="Top" Width="640" Fill="White" />
-        <Image Height="479" HorizontalAlignment="Left" Margin="227,12,0,0" Name="skeletonImage" Stretch="Fill" VerticalAlignment="Top" Width="640" />
-        <Label Content="Amplitude" FontSize="24" FontWeight="Bold" Foreground="White" Height="42" HorizontalAlignment="Left" Margin="254,504,0,0" Name="leftLabel" VerticalAlignment="Top" Width="161" />
-        <Label Content="Frequency:" FontSize="14" FontWeight="Normal" HorizontalAlignment="Left" Margin="8,334,0,197" Name="label8" />
-        <ComboBox Height="30" HorizontalAlignment="Left" Margin="47,274,0,271.4" Width="70" Name="midiSelectorBox" SelectionChanged="midiOption_Changed" />
-        <Label Content="Amplitude:" FontSize="14" FontWeight="Normal" Height="30" HorizontalAlignment="Left" Margin="8,363,0,0" Name="label9" VerticalAlignment="Top" />
-        <Label Content="???" FontSize="14" FontWeight="Normal" HorizontalAlignment="Left" Margin="91,334,0,197" Name="freqLabel" Width="116" />
-        <Label Content="???" FontSize="14" FontWeight="Normal" HorizontalAlignment="Left" Margin="91,363,0,168" Name="ampLabel" Width="116" />
-        <Label Content="Frequency" FontSize="24" FontWeight="Bold" Foreground="White" Height="42" HorizontalAlignment="Left" Margin="706,504,0,0" Name="rightLabel" VerticalAlignment="Top" Width="135" />
-        <Canvas Height="479" HorizontalAlignment="Left" Margin="227,12,0,0" Name="guideCanvas" VerticalAlignment="Top" Width="640" />
-        <CheckBox Content="Left Handed" Height="18" HorizontalAlignment="Left" Margin="12,211,0,0" Name="leftHandCheckbox" VerticalAlignment="Top" FontSize="14" Checked="leftHandCheckbox_Checked" Unchecked="leftHandCheckbox_Checked" />
-        <CheckBox Content="Disable Guides" FontSize="14" Height="21" HorizontalAlignment="Left" Margin="12,246,0,0" Name="useGuidesCheckbox" VerticalAlignment="Top" Checked="useGuidesCheckbox_Checked" Unchecked="useGuidesCheckbox_Checked" />
-        <Label Content="← " Height="42" HorizontalAlignment="Left" Margin="227,504,0,0" Name="label2" VerticalAlignment="Top" Foreground="White" FontSize="24" Width="34" />
-        <Label Content="→" Height="41" HorizontalAlignment="Left" Margin="835,504,0,0" Name="label3" VerticalAlignment="Top" Foreground="White" FontSize="24" />
-        <Label Content="Key: " FontSize="14" FontWeight="Normal" Height="30" HorizontalAlignment="Left" Margin="8,271,0,0" x:Name="label6_Copy" VerticalAlignment="Top" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="315"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Label Content="AS3" FontSize="70" FontWeight="Bold" HorizontalAlignment="Center" Name="label1" VerticalAlignment="Top"/>
+        <Label Content="Group Oddisee" FontSize="30" Margin="0,85,0,0" FontWeight="Light" HorizontalAlignment="Center" x:Name="label1_Copy" VerticalAlignment="Top" />
+        <Label Content="MIDI Output:" FontSize="40" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,270,0,0" x:Name="label6_Copy" VerticalAlignment="Top" />
+        <ComboBox HorizontalAlignment="Center" FontSize="28" Margin="0,340,0,0" Width="240" Name="midiSelectorBox" SelectionChanged="midiOption_Changed" BorderThickness="0" VerticalAlignment="Top" />
+        <Image Height="215" HorizontalAlignment="Left" Margin="8,8,8,8" Name="rgbImage" Opacity="1" Stretch="Fill" VerticalAlignment="Bottom" Grid.Column="0" />
+        <Rectangle Fill="Black" Name="rectangle1" Stroke="Black" Grid.Column="2" />
+        <Image HorizontalAlignment="Right" Margin="20,20,20,100"  Name="skeletonImage" Stretch="Fill" VerticalAlignment="Top" Grid.Column="2" />
+        <Label Content="Notes" FontSize="24" FontWeight="Bold" Foreground="White" Height="42" HorizontalAlignment="Left" Margin="506,240.429,0,0" Name="leftLabel" VerticalAlignment="Top" Width="83" Grid.Row="1" />
+        <Canvas Visibility="Hidden" Height="479" HorizontalAlignment="Left" Margin="227,12,0,0" Name="guideCanvas" VerticalAlignment="Top" Grid.ColumnSpan="2" />
+        <Label Content="Note"  HorizontalAlignment="Center" Margin="0,0,0,20" VerticalAlignment="Bottom" Foreground="White" FontSize="30" FontWeight="Bold" Grid.Column="1" />
+        <Label Content="← " HorizontalAlignment="Center" Margin="0,0,100,20" x:Name="label2" VerticalAlignment="Bottom" Foreground="White" FontSize="28" Width="34" Grid.Column="1" />
+        <Label Content="→" HorizontalAlignment="Center" Margin="100,0,0,20" Name="label3" VerticalAlignment="Bottom" Foreground="White" FontSize="28" Width="35" Grid.Column="1" />
+        <Label Content="Lower" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,235,20" Foreground="White" FontSize="30" FontWeight="Medium" Grid.Column="2"/>
+        <Label Content="Higher" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="235,0,0,20" Foreground="White" FontSize="30" FontWeight="Medium" Grid.Column="2"/>
+       
+
+
     </Grid>
 </Window>

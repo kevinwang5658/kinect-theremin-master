@@ -81,18 +81,6 @@ namespace kinect_theremin
                 midiSelectorBox.SelectedIndex = 0;
             }
             
-
-            // Set up the UI
-            freqLabel.Content = _player.Frequency;
-            ampLabel.Content = _player.Amplitude;
-            for (int i = 0; i < _player.frequencyDict.Count; i++)
-            {
-                keyBox.Items.Add(_player.frequencyDict.ElementAt(i).Key);
-            }
-
-            keyBox.SelectedIndex = 0;
-            // Initialize the wave player
-            ChangeKey();
             _player.Frequency = _player.MinFreq;
             // Set the starting handedness
             _freqHand = JointType.HandRight;
@@ -100,7 +88,7 @@ namespace kinect_theremin
             // Draw the guides
             _freqInterval = guideCanvas.Width / 10;
             //_ampInterval = guideCanvas.Height / 4;
-            DrawGuides();
+            //DrawGuides();
             DrawGuidesThreshold();
             // Instantiate and initialize the KinectHelper
             _helper = new KinectHelper(true, false, true);
@@ -108,36 +96,6 @@ namespace kinect_theremin
             _helper.SkeletonDataChanged += new KinectHelper.SkeletonDataChangedEvent(SkeletonDataChange);
             skeletonImage.Source = _helper.skeletonBitmap;
             rgbImage.Source = _helper.colorBitmap;
-        }
-
-        // Event handler for the playButton's Click event
-        // Used to start and stop playing the wave
-        private void playButton_Click(object sender, RoutedEventArgs e)
-        {
-            // If the wave is not playing, start it
-            if (!_player.IsPlaying())
-                StartPlayer();
-            // If the wave is playing, stop it
-            else
-                StopPlayer();
-        }
-
-        // Event handler for the keyBox's SelectionChanged event
-        // Used to change the key of the wave
-        private void keyBox_Changed(object sender, SelectionChangedEventArgs e)
-        {
-            // Get the current playing status of the wave
-            bool wasPlaying = false;
-            if (_player.IsPlaying())
-                wasPlaying = true;
-            // Stop the player
-            StopPlayer();
-            // Change the key 
-            ChangeKey();
-            // If the wave was playing, start it again
-            Console.WriteLine(wasPlaying);
-            if (wasPlaying)
-                StartPlayer();
         }
 
         private void midiOption_Changed(object sender, SelectionChangedEventArgs e)
@@ -204,65 +162,22 @@ namespace kinect_theremin
             Console.WriteLine(vyFreq + "  " + vyAmp);
 
             if (freqHandPos.Y / skeletonImage.Height < 0.45)
-                GetChromaticNoteFrequency(freqValue, freqHandPos.X / skeletonImage.Width);
+                NoteToSound(freqValue, freqHandPos.X / skeletonImage.Width);
             else
-                note = 0;
+                note = null;
 
             double freqValue1 = 1 - ampHandPos.X / skeletonImage.Width;
            if (ampHandPos.Y / skeletonImage.Height < 0.45)
             //if (vyAmp > 0.5)
                 GetChromaticNoteFrequency1(freqValue1, ampHandPos.X / skeletonImage.Width);
             else
-                note1 = 0;
+                note1 = null;
             // If not, determine the frequency based on the exact position  
 
             freqHandPosPrev = freqHandPos;
             ampHandPosPrev = ampHandPos;
 
 
-        }
-
-        // Start the wave player
-        private void StartPlayer()
-        {
-            //_player.Start();
-            playButton.Content = "Stop";
-        }
-
-        // Stop the wave player
-        private void StopPlayer()
-        {
-            //_player.Stop();
-            playButton.Content = "Play";
-        }
-
-        // Change the key of the wave player
-        private void ChangeKey()
-        {
-            _player.ChangeKeyTo((String)keyBox.SelectedValue);
-            _player.Frequency = _player.MinFreq;
-            freqLabel.Content = _player.MinFreq;
-        }
-
-        // Swap hand control for frequency and amplitude
-        private void ToggleHandedness()
-        {
-            if (_freqHand == JointType.HandRight)
-            {
-                _freqHand = JointType.HandLeft;
-                leftLabel.Content = "Frequency";
-                _ampHand = JointType.HandRight;
-                rightLabel.Content = "Amplitude";
-            }
-            else
-            {
-                _freqHand = JointType.HandRight;
-                rightLabel.Content = "Frequency";
-                _ampHand = JointType.HandLeft;
-                leftLabel.Content = "Amplitude";
-            }
-            ClearGuides();
-            DrawGuides();
         }
 
         // Draw frequency "guides" for differentiating each note
@@ -293,7 +208,7 @@ namespace kinect_theremin
             Rectangle guide = new Rectangle();
             guide.Width = guideCanvas.Width;
             guide.Height = 5;
-            guide.Fill = new SolidColorBrush(Colors.Gray);
+            guide.Fill = new SolidColorBrush(Colors.LightSkyBlue);
             guide.StrokeThickness = 1;
             guideCanvas.Children.Add(guide);
             Canvas.SetLeft(guide, 0);
@@ -306,30 +221,22 @@ namespace kinect_theremin
             guideCanvas.Children.Clear();
         }
 
-        // Convert a "linear" value (0 - 1) to a logarithmic frequency 
-        private float LinearToLog(double value)
+        Note note = null;
+
+        async private void NoteToSound(double x, double y)
         {
-            return (float) Math.Pow(10, value * (Math.Log10(_player.MaxFreq) - Math.Log10(_player.MinFreq)) + Math.Log10(_player.MinFreq));
-        }
+            if (note == null) {
+                note = new Note();
+            }
 
-        // Convert a logarithmic frequency to a "linear" value (0 - 1)
-        private double LogToLinear(float freq)
-        {
-            return (double) ((Math.Log10(freq) - Math.Log10(_player.MinFreq)) / (Math.Log10(_player.MaxFreq) - Math.Log10(_player.MinFreq)));
-        }
-
-        int note = 0;
-
-        async private void GetChromaticNoteFrequency(double x, double y)
-        {
-
-            int chromaticNote = (int)Math.Ceiling(x * 10);
+            int chromaticNote = (int) Math.Ceiling(x * 10);
             double chromaticValue = (double) chromaticNote / 12;
-            if (note != (int)chromaticNote)
+            if (note.note != (int)chromaticNote && Math.Abs(note.position - x) > (1.0/12))
             {
-                note = (int)chromaticNote;
+                note.position = x;
+                note.note = (int)chromaticNote;
                 int channel = 1;
-                var noteOnEvent = new NoteOnEvent(1000, channel, keyMapping[note], 100, 1000);
+                var noteOnEvent = new NoteOnEvent(1000, channel, keyMapping[note.note], 100, 1000);
                 _midiOut.Send(noteOnEvent.GetAsShortMessage());
                 Console.WriteLine(chromaticNote + " --- " + chromaticValue);
 
@@ -343,18 +250,24 @@ namespace kinect_theremin
             }
         }
 
-        int note1 = 0;
+        Note note1 = null;
 
         async private void GetChromaticNoteFrequency1(double x, double y)
         {
 
+            if (note1 == null)
+            {
+                note1 = new Note();
+            }
+
             int chromaticNote = (int)Math.Ceiling(x * 10);
             double chromaticValue = (double)chromaticNote / 12;
-            if (note1 != (int)chromaticNote)
+            if (note1.note != (int)chromaticNote && Math.Abs(note1.position - x) > (1.0/12))
             {
-                note1 = (int)chromaticNote;
+                note1.note = (int)chromaticNote;
+                note1.position = x;
                 int channel = 1;
-                var noteOnEvent = new NoteOnEvent(1000, channel, keyMapping[note1], 100, 1000);
+                var noteOnEvent = new NoteOnEvent(1000, channel, keyMapping[note1.note], 100, 1000);
                 _midiOut.Send(noteOnEvent.GetAsShortMessage());
                 Console.WriteLine(chromaticNote + " --- " + chromaticValue);
 
@@ -386,6 +299,11 @@ namespace kinect_theremin
                 DrawGuides();
             }
 
+        }
+
+        class Note {
+            public int note = 0;
+            public double position = -1000;
         }
     }
 }
