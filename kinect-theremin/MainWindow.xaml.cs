@@ -112,21 +112,15 @@ namespace kinect_theremin
             _midiOut = new MidiOut(midiSelectorBox.SelectedIndex);
         }
 
-        // Event handler for the leftHandCheckbox's Checked/Unchecked events
-        // Used to toggle the user's handedness
-        private void leftHandCheckbox_Checked(object sender, RoutedEventArgs e)
-        {
-            ToggleHandedness();
-        }
-
-        int counter = 0;
-
         // Event handler for KinectHelper.SkeletonDataChanged event
         // Used to get the positions of the user's hands and control the theremin
 
         private Point freqHandPosPrev = new Point(0, 0);
         private Point ampHandPosPrev = new Point(0, 0);
         private long prevTime = DateTime.Now.Millisecond;
+
+        private const int MAX_HEIGHT = 640;
+        private const int MAX_WIDTH = 480;
 
         private void SkeletonDataChange(object o, SkeletonDataChangeEventArgs e)
         {
@@ -148,31 +142,29 @@ namespace kinect_theremin
             Point freqHandPos = _helper.SkeletonPointToScreen(skel.Joints[_freqHand].Position);
             Point ampHandPos = _helper.SkeletonPointToScreen(skel.Joints[_ampHand].Position);
 
+            freqHandPos.X = Math.Max(0, Math.Min(MAX_WIDTH, freqHandPos.X));
+            freqHandPos.Y = Math.Max(0, Math.Min(MAX_HEIGHT, freqHandPos.Y));
+
+            ampHandPos.X = Math.Max(0, Math.Min(MAX_WIDTH, ampHandPos.X));
+            ampHandPos.Y = Math.Max(0, Math.Min(MAX_HEIGHT, ampHandPos.Y));
+
             // Determine the frequency based on the position of the right hand
-            double freqValue = 1 - freqHandPos.X / skeletonImage.Width;
+            double freqValue = 1 - (freqHandPos.X / MAX_HEIGHT);
             float customFreq;
             // If guides are enabled, determine the exact chromatic note to play 
 
-            Console.WriteLine(freqHandPos.Y / skeletonImage.Height);
-            //if (freqHandPos.Y / skeletonImage.Height < 0.45)
+            Console.WriteLine(freqHandPos.X + "  " + freqHandPos.Y);
 
-            double vyFreq = (freqHandPos.Y - freqHandPosPrev.Y) / (DateTime.Now.Millisecond - prevTime);
-            double vyAmp = (ampHandPos.Y - ampHandPosPrev.Y) / (DateTime.Now.Millisecond - prevTime);
-
-            Console.WriteLine(vyFreq + "  " + vyAmp);
-
-            if (freqHandPos.Y / skeletonImage.Height < 0.45)
-                NoteToSound(freqValue, freqHandPos.X / skeletonImage.Width);
+            if (freqHandPos.Y / MAX_HEIGHT < 0.45)
+                NoteToSound(freqValue, freqHandPos.X / MAX_WIDTH);
             else
                 note = null;
 
-            double freqValue1 = 1 - ampHandPos.X / skeletonImage.Width;
-           if (ampHandPos.Y / skeletonImage.Height < 0.45)
-            //if (vyAmp > 0.5)
-                GetChromaticNoteFrequency1(freqValue1, ampHandPos.X / skeletonImage.Width);
+            double freqValue1 = 1 - ampHandPos.X / MAX_WIDTH;
+           if (ampHandPos.Y / MAX_HEIGHT < 0.45)
+                GetChromaticNoteFrequency1(freqValue1, ampHandPos.X / MAX_WIDTH);
             else
-                note1 = null;
-            // If not, determine the frequency based on the exact position  
+                note1 = null; 
 
             freqHandPosPrev = freqHandPos;
             ampHandPosPrev = ampHandPos;
@@ -240,13 +232,6 @@ namespace kinect_theremin
                 _midiOut.Send(noteOnEvent.GetAsShortMessage());
                 Console.WriteLine(chromaticNote + " --- " + chromaticValue);
 
-                
-
-                //await Task.Delay(2500);
-
-                //_midiOut.Reset();
-
-                //_midiOut.Send(new NoteEvent(1000, channel, MidiCommandCode.NoteOff, keyMapping[note], 100).GetAsShortMessage());
             }
         }
 
@@ -270,35 +255,7 @@ namespace kinect_theremin
                 var noteOnEvent = new NoteOnEvent(1000, channel, keyMapping[note1.note], 100, 1000);
                 _midiOut.Send(noteOnEvent.GetAsShortMessage());
                 Console.WriteLine(chromaticNote + " --- " + chromaticValue);
-
-                await Task.Delay(800);
-
-                //_midiOut.Send(new NoteEvent(1000, channel, MidiCommandCode.NoteOff, keyMapping[note1], 100).GetAsShortMessage());
-            }
-        }
-
-        private void sendOn(int note)
-        {
-        }
-
-        // Event handler for the useGuidesCheckbox's Checked and Unchecked events
-        // Used to toggle _enableGuides, play discrete notes or just the current frequency.
-        private void useGuidesCheckbox_Checked(object sender, RoutedEventArgs e)
-        {
-
-            // If guides are currently enabled, disable them and clear them from the canvas
-            if (_enableGuides)
-            {
-                _enableGuides = false;
-                ClearGuides();
-            }
-            // If guides are currently disabled, enable them and draw them on the canvas
-            else
-            {
-                _enableGuides = true;
-                DrawGuides();
-            }
-
+             }
         }
 
         class Note {
