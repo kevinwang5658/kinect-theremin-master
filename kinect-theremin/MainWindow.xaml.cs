@@ -96,13 +96,12 @@ namespace kinect_theremin
             _helper.SkeletonDataChanged += new KinectHelper.SkeletonDataChangedEvent(SkeletonDataChange);
             skeletonImage.Source = _helper.skeletonBitmap;
             rgbImage.Source = _helper.colorBitmap;
-
-            //MainWindow.SizeChangedEvent();
         }
 
-        private void WindowSizeChanged()
+        private void ViewBoxSizeChanged(object sender, SizeChangedEventArgs e)
         {
-
+            noteGuides.Width = e.NewSize.Width;
+            noteGuides.Height = e.NewSize.Height;
         }
 
         private void midiOption_Changed(object sender, SelectionChangedEventArgs e)
