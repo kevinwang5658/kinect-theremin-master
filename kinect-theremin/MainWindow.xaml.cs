@@ -46,23 +46,23 @@ namespace kinect_theremin
 
         private Dictionary<int, int> keyMapping = new Dictionary<int, int>()
         {
-            {-1, 76},
-            {0, 74},
-            {1, 72},
-            {2, 71},
-            {3, 69},
-            {4, 67},
-            {5, 65},
-            {6, 64},
-            {7, 62},
-            {8, 60},
-            {9, 59},
-            {10, 57},
-            {11, 55},
-            {12, 53},
-            {13, 52},
-            {14, 50},
-            {15, 48}
+            {12, 76},
+            {11, 74},
+            {10, 72},
+            {9, 71},
+            {8, 69},
+            {7, 67},
+            {6, 65},
+            {5, 64},
+            {4, 62},
+            {3, 60},
+            {2, 59},
+            {1, 57},
+            {0, 55},
+            {-1, 53},
+            {-2, 52},
+            {-3, 50},
+            {-4, 48}
         };
 
         // MainWindow Constructor 
@@ -125,8 +125,8 @@ namespace kinect_theremin
         private Point ampHandPosPrev = new Point(0, 0);
         private long prevTime = DateTime.Now.Millisecond;
 
-        private const int MAX_HEIGHT = 640;
-        private const int MAX_WIDTH = 480;
+        private const int MAX_HEIGHT = 480;
+        private const int MAX_WIDTH = 640;
 
         private void SkeletonDataChange(object o, SkeletonDataChangeEventArgs e)
         {
@@ -155,20 +155,20 @@ namespace kinect_theremin
             ampHandPos.Y = Math.Max(0, Math.Min(MAX_HEIGHT, ampHandPos.Y));
 
             // Determine the frequency based on the position of the right hand
-            double freqValue = 1 - (freqHandPos.X / MAX_HEIGHT);
+            double freqValue = freqHandPos.X / MAX_WIDTH;
             float customFreq;
             // If guides are enabled, determine the exact chromatic note to play 
 
             Console.WriteLine(freqHandPos.X + "  " + freqHandPos.Y);
 
             if (freqHandPos.Y / MAX_HEIGHT < 0.45)
-                NoteToSound(freqValue, freqHandPos.X / MAX_WIDTH);
+                NoteToSound(freqValue);
             else
                 note = null;
 
-            double freqValue1 = 1 - ampHandPos.X / MAX_WIDTH;
+            double freqValue1 = ampHandPos.X / MAX_WIDTH;
            if (ampHandPos.Y / MAX_HEIGHT < 0.45)
-                GetChromaticNoteFrequency1(freqValue1, ampHandPos.X / MAX_WIDTH);
+                GetChromaticNoteFrequency1(freqValue1);
             else
                 note1 = null; 
 
@@ -221,7 +221,7 @@ namespace kinect_theremin
 
         Note note = null;
 
-        async private void NoteToSound(double x, double y)
+        async private void NoteToSound(double x)
         {
             if (note == null) {
                 note = new Note();
@@ -243,7 +243,7 @@ namespace kinect_theremin
 
         Note note1 = null;
 
-        async private void GetChromaticNoteFrequency1(double x, double y)
+        async private void GetChromaticNoteFrequency1(double x)
         {
 
             if (note1 == null)
