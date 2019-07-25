@@ -102,6 +102,8 @@ namespace kinect_theremin
         {
             noteGuides.Width = e.NewSize.Width;
             noteGuides.Height = e.NewSize.Height;
+
+            DrawGuidesThreshold();
         }
 
         private void midiOption_Changed(object sender, SelectionChangedEventArgs e)
@@ -199,18 +201,16 @@ namespace kinect_theremin
         }
 
         private void DrawGuidesThreshold()
-        {
-            Console.WriteLine("abc");
-            
-            double locationY = guideCanvas.Height * 0.45;
+        {   
+            double locationY = displayGrid.ActualHeight * 0.45;
             Rectangle guide = new Rectangle();
-            guide.Width = guideCanvas.Width;
-            guide.Height = 5;
-            guide.Fill = new SolidColorBrush(Colors.LightSkyBlue);
-            guide.StrokeThickness = 1;
-            guideCanvas.Children.Add(guide);
-            Canvas.SetLeft(guide, 0);
-            Canvas.SetTop(guide, locationY);
+            guide.Width = displayGrid.ActualWidth;
+            guide.Height = 10;
+            guide.Fill = new SolidColorBrush(Colors.Red);
+            guide.Margin = new Thickness(0, locationY, 0, 0);
+            guide.HorizontalAlignment = HorizontalAlignment.Stretch;
+            guide.VerticalAlignment = VerticalAlignment.Top;
+            displayGrid.Children.Add(guide);
         }
 
         // Clear frequency guides
