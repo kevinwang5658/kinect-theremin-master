@@ -17,6 +17,7 @@ using NAudio.CoreAudioApi;
 using NAudio.Midi;
 using Microsoft.Kinect;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace kinect_theremin
 {
@@ -122,7 +123,7 @@ namespace kinect_theremin
                 StopPlayer();
         }
         
-        private class DottedLine {
+       /* private class DottedLine {
             private int id;
             private PointF coordinatesFrom;
             private PointF coordinatesTo;
@@ -137,10 +138,10 @@ namespace kinect_theremin
             public void draw(Pen pen) {
                 Graphics.drawLine(blackPen, coordinatesFrom, coordinatesTo);
             }
-        }
+        }*/
        private void drawDottedLines() {
-        Pen blackPen = new Pen(Color.Black, 3);
-        int skeletonImageWidth = skeletonImage.Width;
+        Pen blackPen = new Pen(Colors.Black, 3); 
+        double skeletonImageWidth = skeletonImage.Width;
         PointF coordinatesFrom = new PointF(0, 0);
         PointF coordinatesTo = new PointF(0, 0);
 
@@ -157,7 +158,7 @@ namespace kinect_theremin
             coordinatesTo.X = constantMargin + lineIncrement;
             coordinatesFrom.X = constantMargin + lineIncrement;
 
-            Graphics.drawLine(blackPen, coordinatesFrom, coordinatesTo);
+            DrawLine(blackPen, coordinatesFrom, coordinatesTo);
         };
        }
 
