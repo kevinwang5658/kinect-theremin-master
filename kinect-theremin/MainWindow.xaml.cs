@@ -96,6 +96,13 @@ namespace kinect_theremin
             _helper.SkeletonDataChanged += new KinectHelper.SkeletonDataChangedEvent(SkeletonDataChange);
             skeletonImage.Source = _helper.skeletonBitmap;
             rgbImage.Source = _helper.colorBitmap;
+
+            //MainWindow.SizeChangedEvent();
+        }
+
+        private void WindowSizeChanged()
+        {
+
         }
 
         private void midiOption_Changed(object sender, SelectionChangedEventArgs e)
@@ -223,7 +230,7 @@ namespace kinect_theremin
 
             int chromaticNote = (int) Math.Ceiling(x * 10);
             double chromaticValue = (double) chromaticNote / 12;
-            if (note.note != (int)chromaticNote && Math.Abs(note.position - x) > (1.0/12))
+            if (note.note != (int)chromaticNote /*&& Math.Abs(note.position - x) > (1.0/12)*/)
             {
                 note.position = x;
                 note.note = (int)chromaticNote;
@@ -247,7 +254,7 @@ namespace kinect_theremin
 
             int chromaticNote = (int)Math.Ceiling(x * 10);
             double chromaticValue = (double)chromaticNote / 12;
-            if (note1.note != (int)chromaticNote && Math.Abs(note1.position - x) > (1.0/12))
+            if (note1.note != (int)chromaticNote /*&& Math.Abs(note1.position - x) > (1.0/12)*/)
             {
                 note1.note = (int)chromaticNote;
                 note1.position = x;
